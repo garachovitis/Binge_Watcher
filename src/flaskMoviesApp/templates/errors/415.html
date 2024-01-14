@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Error 415: Unsupported Media Type
+{% endblock title %}
+
+{% block content %}
+
+<div class="error_message">
+    ERROR 415! Ο τύπος περιεχομένου δεν υποστηρίζεται!
+</div>
+
+<div class="error_image_container">
+    <img class="error_image" src="{{ url_for('static', filename='images/errors/415.jpg') }}" alt="error_415">
+</div>
+
+{% endblock %}

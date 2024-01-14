@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Ταινίες από {{ author.username }}
+{% endblock title %}
+
+{% block content %}
+
+<div style="display: flex; align-items: center;">
+  <h2 class="aba_header" style="font-size: 16px;">Ταινίες του χρήστη: {{ author.username }}</h2>
+  <img class="rounded-circle profile-image" alt="{{ author.username }}" src="{{ url_for('static', filename='images/profiles_images/'+author.profile_image) }}" data-holder-rendered="true" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ author.username }}">
+</div>
+
+    <hr>
+
+    <!-- Τα παρακάτω δύο κουμπιά θα πρέπει να ταξινομούν τη λίστα ανά βαθμολογία ή έτους πρώτης προβολής αντίστοιχα -->
+
+    <div class="align-buttons">
+      <style>
+        .btn-protyp {
+            background-color: #343a40; /* Γκρι σκούρο */
+            color: white;
+            border-color: #343a40;
+        }
+        .btn-protyp:hover {
+            background-color: #2125299c; /* Σκούροτερο γκρι */
+            border-color: #b8bdc3;
+        }
+    
+    </style>
+    
+    <a class="btn btn-protyp btn-sm mt-1 mb-1" href="{{ url_for('movies_by_author', author_id=author.id, ordering='rating') }}">Ταξινόμηση βάσει βαθμολογίας</a>
+        &nbsp;&nbsp;&nbsp;
+        <a class="btn btn-protyp btn-sm mt-1 mb-1" href="{{ url_for('movies_by_author', author_id=author.id, ordering='release_year') }}">Ταξινόμηση βάσει έτους προβολής</a>
+
+      </div>
+    <hr>
+
+
+    <hr>
+
+        <!-- Εδώ πρέπει να μπεί ο κώδικας που εμφανίζει τη λίστα με τις ταινίες του συγκεκριμένου χρήστη -->
+
+        <!-- Αρχικά θα είναι η εικόνα, από κάτω ο τίτλος και δίπλα από τον τίτλο το έτος πρώτης προβολής και το rating -->
+        <!-- Στην εικόνα καθορίστε το "height=480px" χωρίς να βάλετε width ώστε να μην παραμορφώνεται -->
+        <!-- κάτω από τον τίτλο θα είναι η πλοκή/υπόθεση της ταινίας κομμένη στους 255 χαρακτήρες -->
+        <!-- τέλος, κάτω από την πλοκή θα είναι ο χρήστης που εισήγαγε την ταινία με το εικονίδιό του -->
+        <!-- Πατώντας στον τίτλο της ταινίας θα μας πηγαίνει στη σελίδα όπου μπορούμε να δούμε τα πλήρη στοιχεία της -->
+        
+        <!-- Η λίστα των ταινιών θα πρέπει από default να είναι ταξινομημένες ανά φθίνουσα ημερομηνία εισαγωγής τους -->
+      {%if movies %}
+
+            {% for movie in movies.items %}
+                <div class="row my-3 p-3 bg-body rounded shadow-sm">
+                    <div class="col col-md-12">
+                        {% if movie.image and movie.image != 'default_movie_image.png' %}
+                            <img src="{{ url_for('static', filename='images/movies_images/'+movie.image) }}" 
+                            alt="" class="img-responsive a_image img-fluid rounded mx-auto d-block" height="480px">
+                        {% endif %}
+                    </div>
+
+                    <div class="col col-md-12 text-center">
+                      <style>
+                        /* Προσαρμοσμένο CSS για το κείμενο του τίτλου της ταινίας */
+                        .main-movie-title {
+                            color: black; /* Μαύρο χρώμα για το κείμενο */
+                            text-decoration: none; /* Καμία υπογράμμιση από προεπιλογή */
+                
+                            /* Υπογράμμιση μόνο κατά το hover */
+                            transition: text-decoration 0.3s; /* Εφέ μετάβασης για την υπογράμμιση */
+                        }
+                
+                        .main-movie-title:hover {
+                            text-decoration: underline; /* Υπογράμμιση κατά το hover */
+                        }
+                    </style>
+                      <p class="main-movie-title">
+                        <a class="movie_title" href="{{ url_for('movie', movie_id=movie.id)}}">{{ movie.title | safe }}</a>
+                          ({{ movie.release_year }}) [{{ movie.rating / 10 }}]
+                      </p>
+
+                      <style>
+                        .main-movie-partial-text {
+                            font-size: 14px; /* Ορίστε το επιθυμητό μέγεθος γραμματοσειράς εδώ */
+                        }
+                    </style>
+                       
+                      <p class="main-movie-partial-text">
+                          {{ movie.plot | truncate(255) | safe }}
+                      </p>
+                      <p class="">Από 
+                        <span>
+                          <a class="author-name" href="{{url_for('movies_by_author', author_id=movie.author.id)}}"> {{ movie.author.username }}
+                              <img class="rounded-circle profile-image" alt="{{ movie.author.username }}" src="{{ url_for('static', filename='images/profiles_images/'+movie.author.profile_image) }}" data-holder-rendered="true" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ movie.author.username }}">
+                          </a>
+                        </span>
+                      </p>
+                    </div>
+                </div>
+              
+        
+                <hr>
+
+            {% endfor %}
+
+            <div>
+              <!-- Εδώ θα πρέπει να μπεί ο κώδικας για το pagination της σελίδας (παρομοίως με την αρχική σελίδα) -->
+              {% for page_number in movies.iter_pages(left_edge=2, right_edge=2, left_current=1, right_current=2)  %}
+
+                  {% if page_number %}
+
+                    {% if movies.page == page_number %}
+
+                        <a class="btn btn-primary" href="{{ url_for('movies_by_author', author_id=author.id, page=page_number, ordering=ordering) }}">{{ page_number }} </a> 
+
+                    {%else%}
+
+                        <a class="btn btn-outline-primary" href="{{ url_for('movies_by_author', author_id=author.id, page=page_number, ordering=ordering) }}">{{ page_number }} </a> 
+
+                    {% endif %}
+
+                  {%else%}
+                    <span class="bi bi-dot">...</span>
+                  {% endif %}
+
+              {% endfor %}
+            </div>
+
+      {% else %}
+        <div class="alert alert-info alert-dismissible fade show" role="alert">Δε βρέθηκε καμμία ταινία</div>
+      {% endif %}
+
+{% endblock %}

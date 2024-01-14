@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ page_title }}
+{% endblock %}
+
+{% block content%}
+<div class="container login-container">
+  <div class="row">
+    <div class="col-md-6 login-form-1">
+        <h3>{{ page_title }}</h3>
+
+<!-- Εδώ μπαίνει ο κώδικας της φόρμας εισαγωγής νέας ταινίας με όλα τα απαραίτητα πεδία -->
+<!-- προσοχή στη δήλωση της φόρμας καθώς θα στέλνει και αρχεία (movie image) εκτός από απλά δεδομένα -->
+<!-- Επίσης θα πρέπει να μπεί βοηθητικό κείμενο στο πεδίο βαθμολογίας και έτους πρώτης προβολής (παρομοίως με τα υπόλοιπα πεδία) που -->
+<!-- θα ενημερώνει τους χρήστες ότι επιτρέπονται ακέραιοι αριθμοί από το 1 έως το 100 για το rating και από το 1888 έως το current year για το έτος πρώτης προβολής -->
+
+
+        <form novalidate action="#" method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+
+            <div class="mb-3">
+              {{ form.title.label(class="form-label") }}
+              {{ form.title(class="form-control", placeholder="Τίτλος Ταινίας", required=False) }}
+              <div id="movie_titleHelp" class="form-text">Υποχρεωτικό Πεδίο</div>
+                  {% if form.title.errors %}
+                      <ul class="errors">
+                          {% for error in form.title.errors %}
+                              <li class="alert text-danger"> 
+                                  {{ error }} 
+                              </li>
+                          {% endfor %}
+                      </ul>
+                   {% endif %}
+          </div>
+
+
+          <div class="mb-3">
+              {{ form.plot.label(class="form-label") }}
+              {{ form.plot(class="form-control", rows="5", placeholder="Εισάγετε την πλοκή της ταινίας.",required=False) }}
+              <div id="plotHelp" class="form-text">Υποχρεωτικό Πεδίο</div>
+                  {% if form.plot.errors %}
+                      <ul class="errors">
+                          {% for error in form.plot.errors%}
+                              <li class="alert text-danger"> 
+                                  {{ error }} 
+                              </li>
+                          {% endfor %}
+                      </ul>
+                   {% endif %}
+          </div>
+
+
+          <div class="mb-3">
+              {{ form.image.label(class="form-label") }}
+              {{ form.image(class="form-control", required=False) }}
+              <div id="movie_imageHelp" class="form-text">
+                Παρακαλώ δώστε μια εικόνα για την ταινία (max size 2mb).</div>
+                 {% if form.image.errors %}
+                     <ul class="errors">
+                         {% for error in form.image.errors%}
+                             <li class="alert text-danger"> 
+                                 {{ error }} 
+                             </li>
+                         {% endfor %}
+                     </ul>
+                  {% endif %}
+         </div>
+
+         <div class="mb-3">
+          {{ form.rating.label(class="form-label") }}
+          {{ form.rating(class="form-control", placeholder="Βαθμολογία ταινίας.",required=False) }}
+          <div id="rating_Help" class="form-text">Εισάγετε βαθμολογία. (Ακέραιος απο 1-100.)</div>
+              {% if form.rating.errors %}
+                  <ul class="errors">
+                      {% for error in form.rating.errors%}
+                          <li class="alert text-danger"> 
+                              {{ error }} 
+                          </li>
+                      {% endfor %}
+                  </ul>
+               {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.release_year.label(class="form-label") }}
+            {{ form.release_year(class="form-control", placeholder="Έτος πρώτης προβολής.",required=False) }}
+            <div id="release_year_Help" class="form-text">Εισάγετε το έτος πρώτης προβολής της ταινίας. (Ακέραιος από το 1888 έως το <span id="current_year"></span>)</div>
+
+            <script>
+              const currentYear = new Date().getFullYear();
+              document.getElementById('current_year').textContent = currentYear;
+            </script>
+                            {% if form.release_year.errors %}
+                    <ul class="errors">
+                        {% for error in form.release_year.errors%}
+                            <li class="alert text-danger"> 
+                                {{ error }} 
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary" style="background-color: #8b008b; border-color: #8b008b;">Αποθήκευση</button>
+        </div>
+
+
+          
+        </form>
+        
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

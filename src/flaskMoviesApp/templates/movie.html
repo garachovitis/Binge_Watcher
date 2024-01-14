@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ movie.title }}
+{% endblock title %}
+
+{% block content %}
+<main role="main" class="container">
+
+    {% if movie %}
+    <div class="row my-3 p-3 bg-body rounded shadow-sm">
+        <div class="col col-md-12">
+            {% if movie.image and movie.image != 'default_movie_image.png' %}
+            <img src="{{ url_for('static', filename='images/movies_images/' + movie.image) }}" alt="{{ movie.title }}" title="{{ movie.title }}" class="img-responsive mx-auto d-block a_image">
+            {% endif %}
+        </div>
+        <div class="col col-md-12">
+            <style>
+                /* Προσαρμοσμένο CSS για το κείμενο του τίτλου της ταινίας */
+                .main-movie-title {
+                    color: black; /* Μαύρο χρώμα για το κείμενο */
+                    text-decoration: none; /* Καμία υπογράμμιση από προεπιλογή */
+        
+                    /* Υπογράμμιση μόνο κατά το hover */
+                    transition: text-decoration 0.3s; /* Εφέ μετάβασης για την υπογράμμιση */
+                }
+        
+                .main-movie-title:hover {
+                    text-decoration: underline; /* Υπογράμμιση κατά το hover */
+                }
+            </style>
+            <p class="main-movie-title">
+                {{ movie.title }} ({{ movie.release_year }}) [{{ movie.rating / 10 }}]
+            </p>
+            <small class="movie_date">[{{ movie.insert_date.strftime('%d-%m-%Y') }}]</small> <!-- Εδώ προσθέσαμε την ημερομηνία δημιουργίας -->
+
+            <div>
+                <!-- Ελέγξτε αν ο χρήστης έχει δικαίωμα να επεξεργαστεί ή να διαγράψει την ταινία -->
+                {% if current_user == movie.author %}
+                <style>
+                    .btn-edit {
+                        background-color: #343a40; /* Γκρι σκούρο */
+                        color: white;
+                        border-color: #343a40;
+                    }
+            
+                    .btn-delete {
+                        background-color: #8b008b; /* Σκούρο μοβ προς κοκκινο */
+                        color: white;
+                        border-color: #8b008b;
+                    }
+            
+                    .btn-edit:hover {
+                        background-color: #2125299c; /* Σκούροτερο γκρι */
+                        border-color: #b8bdc3;
+                    }
+            
+                    .btn-delete:hover {
+                        background-color: #f90158; /* Κόκκινο */
+                        border-color: #f90158;
+                    }
+                </style>
+            
+                <a class="btn btn-edit btn-sm" href="{{ url_for('edit_movie', movie_id=movie.id) }}">Επεξεργασία</a>
+                <button type="button" class="btn btn-delete btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ movie.id }}">Διαγραφή</button>
+                {% endif %}
+            </div>
+            
+            
+
+            <div class="main-movie-full-text">
+                {{ movie.plot | safe }}
+            </div>
+
+            <p class="">Από
+                <span>
+                    <a class="author-name" href="{{ url_for('movies_by_author', author_id=movie.author.id) }}">
+                        {{ movie.author.username }}
+                        <img class="rounded-circle navbar-profile-image" alt="{{ current_user.username }}" src="{{ url_for('static', filename='images/profiles_images/'+movie.author.profile_image) }}" data-holder-rendered="true" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ movie.author.username }}">
+                    </a>
+                </span>
+            </p>
+
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">Δεν βρέθηκε ταινία</div>
+    {% endif %}
+
+</main>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Διαγραφή ταινίας</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Είστε σίγουρος/η ότι θέλετε να διαγράψετε αυτή την ταινία;
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Κλείσιμο</button>
+                <!-- Εδώ πρέπει να μπεί η φόρμα που περιέχει το κουμπί διαγραφής της ταινίας -->
+                <!-- και οδηγεί στο route διαγραφής -->
+                <form action="{{ url_for('delete_movie', movie_id=movie.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Διαγραφή</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
